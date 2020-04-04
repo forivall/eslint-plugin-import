@@ -358,7 +358,7 @@ function convertGroupsToRanks(groups) {
       if (res[groupItem] !== undefined) {
         throw new Error('Incorrect configuration of the rule: `' + groupItem + '` is duplicated')
       }
-      res[groupItem] = index
+      res[groupItem] = index || 1e-323
     })
     return res
   }, {})
