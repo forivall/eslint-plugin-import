@@ -265,6 +265,15 @@ function getSorter(ascending) {
   }
 }
 
+function swapCase(input) {
+  let result = ''
+  for (let i = 0; i < input.length; i++) {
+    const lower = input[i].toLowerCase()
+    result += input[i] === lower ? input[i].toUpperCase() : lower
+  }
+  return result
+}
+
 function mutateRanksToAlphabetize(imported, alphabetizeOptions) {
   const groupedByRanks = imported.reduce(function(acc, importedItem) {
     if (!Array.isArray(acc[importedItem.rank])) {
@@ -277,7 +286,10 @@ function mutateRanksToAlphabetize(imported, alphabetizeOptions) {
   const groupRanks = Object.keys(groupedByRanks)
 
   const sorterFn = getSorter(alphabetizeOptions.order === 'asc')
-  const comparator = alphabetizeOptions.caseInsensitive ? (a, b) => sorterFn(String(a).toLowerCase(), String(b).toLowerCase()) : (a, b) => sorterFn(a, b)
+  const comparator =
+    alphabetizeOptions.caseInsensitive === 'invert' ? (a, b) => sorterFn(swapCase(String(a)), swapCase(String(b)))
+    : alphabetizeOptions.caseInsensitive ? (a, b) => sorterFn(String(a).toLowerCase(), String(b).toLowerCase())
+    : (a, b) => sorterFn(a, b)
   // sort imports locally within their group
   groupRanks.forEach(function(groupRank) {
     groupedByRanks[groupRank].sort(comparator)
@@ -544,8 +556,10 @@ module.exports = {
             type: 'object',
             properties: {
               caseInsensitive: {
-                type: 'boolean',
-                default: false,
+                anyOf: [
+                  { type: 'boolean', default: false },
+                  { type: 'string', enum: ['invert'] },
+                ],
               },
               order: {
                 enum: ['ignore', 'asc', 'desc'],
