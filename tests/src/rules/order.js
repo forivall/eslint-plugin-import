@@ -2121,7 +2121,7 @@ ruleTester.run('order', rule, {
         message: '`foo` import should occur before import of `Bar`',
       }],
     }),
-    // Option alphabetize {order: 'asc': caseInsensitive: 'invert'}
+    // Option alphabetize {order: 'asc', caseFirst: 'lower'}
     test({
       code: `
         import a from 'bar';
@@ -2139,13 +2139,13 @@ ruleTester.run('order', rule, {
       `,
       options: [{
         groups: ['external', 'index'],
-        alphabetize: { order: 'asc', caseInsensitive: 'invert' },
+        alphabetize: { order: 'asc', caseFirst: 'lower' },
       }],
       errors: [{
         message: '`foo` import should occur before import of `Foo`',
       }],
     }),
-    // Option alphabetize {order: 'desc': caseInsensitive: 'invert'}
+    // Option alphabetize {order: 'desc', caseFirst: 'lower'}
     test({
       code: `
         import a from 'foo';
@@ -2163,7 +2163,7 @@ ruleTester.run('order', rule, {
       `,
       options: [{
         groups: ['external', 'index'],
-        alphabetize: { order: 'desc', caseInsensitive: 'invert' },
+        alphabetize: { order: 'desc', caseFirst: 'lower' },
       }],
       errors: [{
         message: '`Foo` import should occur before import of `foo`',

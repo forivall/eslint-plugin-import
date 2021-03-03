@@ -246,11 +246,9 @@ function getSorter(alphabetizeOptions) {
   const multiplier = alphabetizeOptions.order === 'asc' ? 1 : -1;
   let collate;
   if (alphabetizeOptions.caseInsensitive) {
-    if (alphabetizeOptions.caseFirst === 'lower') {
-      collate = swapCase;
-    } else {
-      collate = (s) => String(s).toLowerCase();
-    }
+    collate = (s) => String(s).toLowerCase();
+  } else if (alphabetizeOptions.caseFirst === 'lower') {
+    collate = swapCase;
   }
 
   function importsSorter(importA, importB) {
@@ -517,8 +515,9 @@ function getAlphabetizeConfig(options) {
   const alphabetize = options.alphabetize || {};
   const order = alphabetize.order || 'ignore';
   const caseInsensitive = alphabetize.caseInsensitive || false;
+  const caseFirst = alphabetize.caseFirst || 'upper';
 
-  return { order, caseInsensitive };
+  return { order, caseInsensitive, caseFirst };
 }
 
 module.exports = {
@@ -574,10 +573,12 @@ module.exports = {
             type: 'object',
             properties: {
               caseInsensitive: {
-                anyOf: [
-                  { type: 'boolean', default: false },
-                  { type: 'string', enum: ['invert'] },
-                ],
+                type: 'boolean',
+                default: false,
+              },
+              caseFirst: {
+                type: 'string',
+                enum: ['upper', 'lower'].
               },
               order: {
                 enum: ['ignore', 'asc', 'desc'],
