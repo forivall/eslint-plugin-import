@@ -247,10 +247,18 @@ function makeOutOfOrderReport(context, imported) {
   reportOutOfOrder(context, imported, outOfOrder, 'before')
 }
 
-function getSorter(ascending) {
+function getSorter(ascending, caseInsensitive) {
   let multiplier = (ascending ? 1 : -1)
+  let collate = caseInsensitive
+    ? caseInsensitive === 'invert'
+      ? swapCase
+      : (s) => String(s).toLowerCase()
+    : (s) => s
 
   return function importsSorter(importA, importB) {
+    importA = collate(importA)
+    importB = collate(importB)
+
     let result
 
     if ((importA < importB) || importB === null) {
@@ -285,14 +293,10 @@ function mutateRanksToAlphabetize(imported, alphabetizeOptions) {
 
   const groupRanks = Object.keys(groupedByRanks)
 
-  const sorterFn = getSorter(alphabetizeOptions.order === 'asc')
-  const comparator =
-    alphabetizeOptions.caseInsensitive === 'invert' ? (a, b) => sorterFn(swapCase(String(a)), swapCase(String(b)))
-    : alphabetizeOptions.caseInsensitive ? (a, b) => sorterFn(String(a).toLowerCase(), String(b).toLowerCase())
-    : (a, b) => sorterFn(a, b)
+  const sorterFn = getSorter(alphabetizeOptions.order === 'asc', alphabetizeOptions.caseInsensitive)
   // sort imports locally within their group
   groupRanks.forEach(function(groupRank) {
-    groupedByRanks[groupRank].sort(comparator)
+    groupedByRanks[groupRank].sort(sorterFn)
   })
 
   // assign globally unique rank to each import
